@@ -1,0 +1,55 @@
+import os
+import re
+import csv
+import fitz  # PyMuPDF
+
+def read_pdf(file_path):
+    text = ''
+    with fitz.open(file_path) as pdf:
+        for page in pdf:
+            text += page.get_text()
+    return text
+
+def find_md5_hashes(text):
+    md5_pattern = r'\b[a-fA-F0-9]{32}\b'
+    return re.findall(md5_pattern, text)
+
+def find_sha1_hashes(text):
+    sha1_pattern = r'\b[a-fA-F0-9]{40}\b'
+    return re.findall(sha1_pattern, text)
+
+def write_to_csv(data, csv_file):
+    with open(csv_file, 'w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['Source File', 'MD5 Hash', 'SHA-1 Hash'])
+        for row in data:
+            writer.writerow(row)
+
+def main():
+    folder_path = "C:\\Users\\mactwo\\Desktop\\CVIPs"
+    csv_file = "C:\\Users\\mactwo\\Desktop\\CVIPs\\output.csv"
+    data = []
+
+    print(f"Processing files in folder: {folder_path}")
+
+    for filename in os.listdir(folder_path):
+        if filename.endswith('.pdf'):
+            file_path = os.path.join(folder_path, filename)
+            print(f"Processing file: {file_path}")
+            text = read_pdf(file_path)
+            md5_hashes = find_md5_hashes(text)
+            sha1_hashes = find_sha1_hashes(text)
+            
+            # Ensure all hashes are captured
+            max_len = max(len(md5_hashes), len(sha1_hashes))
+            for i in range(max_len):
+                md5 = md5_hashes[i] if i < len(md5_hashes) else ''
+                sha1 = sha1_hashes[i] if i < len(sha1_hashes) else ''
+                data.append([filename, md5, sha1])
+                print(f"Found MD5: {md5} and SHA-1: {sha1} in file: {filename}")
+
+    write_to_csv(data, csv_file)
+    print(f"Data written to CSV file: {csv_file}")
+
+if __name__ == '__main__':
+    main()
