@@ -26,8 +26,8 @@ def write_to_csv(data, csv_file):
             writer.writerow(row)
 
 def main():
-    folder_path = "C:\\Users\\mactwo\\Desktop\\CVIPs"
-    csv_file = "C:\\Users\\mactwo\\Desktop\\CVIPs\\output.csv"
+    folder_path = "folder containing pdfs"
+    csv_file = "path to output csv file must end in .csv"
     data = []
 
     print(f"Processing files in folder: {folder_path}")
